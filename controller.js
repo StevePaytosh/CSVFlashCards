@@ -1,5 +1,6 @@
 var questions=[];
-
+var current_question="";
+var current_answer="";
 
 $(document).ready(function(){
 	
@@ -15,16 +16,28 @@ function PushQuestion( question )
 function GetRandomQuestion()
 {
 	//gets a random question
-	var length=questions.length;
-	return questions[Math.floor(Math.random()*length)];
 
+	var length=questions.length;
+	var q = questions[Math.floor( Math.random()*length ) ];
+	current_question=q.question;
+	current_answer=q.answer;
 }
 
 function NextQuestion()
 {
+	clearOutput();
 	var output=""
-	var q=GetRandomQuestion();
-	output="Q: "+ q.question+ "\nA: "+q.answer;
+	GetRandomQuestion();
+
+	output="Q: "+ current_question+"<p>";
+	print(output);
+	
+}
+
+function GetAnswer()
+{
+	clearOutput();
+	var output="Q: "+ current_question+"<p>A: "+current_answer+"<p>";
 	print(output);
 	
 }
@@ -45,6 +58,8 @@ function process()
 
 function run_file(doc,start, end)
 {
+	ClearQuestions();
+	
 	for(var i=start;i<end;i++)
 	{
 		doc[i]=doc[i].trim();
@@ -53,11 +68,16 @@ function run_file(doc,start, end)
 		var question=
 		{
 			answer:args[0],
-			questions:args[1]
+			question:args[1]
 			
 		};
 		
-		PushQuestion(question);
+		if(question.answer!=null && question.question!=null)
+		{
+			PushQuestion(question);
+		}
 		
 	}
+	
+	print("file loaded");
 }
