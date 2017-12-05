@@ -65,10 +65,17 @@ function run_file(doc,start, end)
 		doc[i]=doc[i].trim();
 		var args=doc[i].split(","); //split up the line on commas
 		
+		var ans="";
+		
+		for(var j=1; j<args.length; j++)
+		{
+			ans+=args[j];
+		}
+		
 		var question=
 		{
-			answer:args[0],
-			question:args[1]
+			answer:ans,
+			question:args[0]
 			
 		};
 		
