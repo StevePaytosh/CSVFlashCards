@@ -1,0 +1,27 @@
+<head>
+<script src="http://www.w3schools.com/lib/w3data.js"></script>
+	<script src="http://www.w3schools.com/lib/w3data.js"></script>
+	  <script src="jquery-3.2.1.js"></script>	
+	  
+      <script type="text/javascript" src="controller.js" ></script>
+	  <script type="text/javascript" src="io.js" ></script>
+
+	  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+<body>
+<div class="s">
+<div id="title">CSV Flash Cards</div>
+<p>
+<input  type="file" id="fileInput" name="files[]"  />
+<button id="run" onclick="process()">&#9658;</button><br>
+<button id="clear" onclick="clearOutput()">&#x21BB;</button><br>
+<button id="NextQuestion" onclick="NextQuestion()">Next Question</button><br>
+
+
+<div id="out"></div>
+
+</div>
+</body>
