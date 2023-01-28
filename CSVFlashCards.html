@@ -2,6 +2,7 @@
 <script src="http://www.w3schools.com/lib/w3data.js"></script>
 	<script src="http://www.w3schools.com/lib/w3data.js"></script>
 	  <script src="jquery-3.2.1.js"></script>	
+	  <script type='text/javascript' src='knockout-3.5.1.js'></script>
 	  
       <script type="text/javascript" src="controller.js" ></script>
 	  <script type="text/javascript" src="io.js" ></script>
@@ -16,10 +17,10 @@
 <div id="title">CSV Flash Cards</div>
 <p>
 <input  type="file" id="fileInput" name="files[]"  />
-<button id="run" onclick="process()">Load CSV</button><br>
-<button id="clear" onclick="clearOutput()">Clear</button><br>
-<button id="NextQuestion" onclick="NextQuestion()">Next Question</button><br>
-<button id="Answer" onclick="GetAnswer()">Answer</button><br>
+<button id="run" data-bind="click:process ">Load CSV</button><br>
+<button id="clear" data-bind="click:clearOutput">Clear</button><br>
+<button id="NextQuestion" data-bind="click:NextQuestion">Next Question</button><br>
+<button id="Answer" data-bind="click:GetAnswer">Answer</button><br>
 
 
 <div id="out"></div>

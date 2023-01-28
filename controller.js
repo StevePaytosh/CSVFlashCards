@@ -1,15 +1,15 @@
-var questions=[];
-var current_question="";
-var current_answer="";
-
-$(document).ready(function(){
+var CSVQuestionViewModel = function()
+{
+	CSVQuestionViewModel.currentAnswer = ko.observable('');
+	CSVQuestionViewModel.currentQuestion = ko.observable('');
+	CSVQuestionViewModel.questions = ko.observableArray();
 	
-});
+};
 
 function PushQuestion( question )
 {
 	//pushes a new questions object
-	questions.push(question);
+	CSVQuestionViewModel.questions.push(question);
 
 }
 
@@ -17,10 +17,10 @@ function GetRandomQuestion()
 {
 	//gets a random question
 
-	var length=questions.length;
-	var q = questions[Math.floor( Math.random()*length ) ];
-	current_question=q.question;
-	current_answer=q.answer;
+	var length=CSVQuestionViewModel.questions().length;
+	var q = CSVQuestionViewModel.questions()[Math.floor( Math.random()*length ) ];
+	CSVQuestionViewModel.currentQuestion(q.question);
+	CSVQuestionViewModel.currentAnswer(q.answer);
 }
 
 function NextQuestion()
@@ -29,7 +29,7 @@ function NextQuestion()
 	var output=""
 	GetRandomQuestion();
 
-	output="Q: "+ current_question+"<p>";
+	output="Q: "+ CSVQuestionViewModel.currentQuestion()+"<p>";
 	print(output);
 	
 }
@@ -37,15 +37,14 @@ function NextQuestion()
 function GetAnswer()
 {
 	clearOutput();
-	var output="Q: "+ current_question+"<p>A: "+current_answer+"<p>";
+	var output="Q: "+ CSVQuestionViewModel.currentQuestion()+"<p>A: "+CSVQuestionViewModel.currentAnswer()+"<p>";
 	print(output);
 	
 }
 
 function ClearQuestions()
 {
-	
-	questions=[];
+	CSVQuestionViewModel.questions=ko.observableArray();
 }
 
 
@@ -88,3 +87,7 @@ function run_file(doc,start, end)
 	
 	print("file loaded");
 }
+
+$(document).ready(function(){
+	 ko.applyBindings(new CSVQuestionViewModel() );
+});
