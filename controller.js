@@ -2,21 +2,17 @@ var CSVQuestionViewModel = function()
 {
 	CSVQuestionViewModel.currentAnswer = ko.observable('');
 	CSVQuestionViewModel.currentQuestion = ko.observable('');
+	CSVQuestionViewModel.ShowCenterButtons = ko.observable(false);
+	CSVQuestionViewModel.ShowAnswerButton = ko.observable(false);
+	CSVQuestionViewModel.DisplayQuestion = ko.observable(false);
+	CSVQuestionViewModel.DisplayAnswer = ko.observable(false);
+	CSVQuestionViewModel.DisplayCard = ko.observable(false);
 	CSVQuestionViewModel.questions = ko.observableArray();
 	
 };
 
-function PushQuestion( question )
-{
-	//pushes a new questions object
-	CSVQuestionViewModel.questions.push(question);
-
-}
-
 function GetRandomQuestion()
 {
-	//gets a random question
-
 	var length=CSVQuestionViewModel.questions().length;
 	var q = CSVQuestionViewModel.questions()[Math.floor( Math.random()*length ) ];
 	CSVQuestionViewModel.currentQuestion(q.question);
@@ -25,26 +21,34 @@ function GetRandomQuestion()
 
 function NextQuestion()
 {
-	clearOutput();
-	var output=""
+	CSVQuestionViewModel.currentQuestion('');
+	CSVQuestionViewModel.currentAnswer('');
 	GetRandomQuestion();
 
-	output="Q: "+ CSVQuestionViewModel.currentQuestion()+"<p>";
-	print(output);
+	CSVQuestionViewModel.DisplayAnswer(false);
+
+	if(!CSVQuestionViewModel.ShowAnswerButton())
+	{
+		CSVQuestionViewModel.ShowAnswerButton(true);
+	}
 	
 }
 
 function GetAnswer()
 {
-	clearOutput();
-	var output="Q: "+ CSVQuestionViewModel.currentQuestion()+"<p>A: "+CSVQuestionViewModel.currentAnswer()+"<p>";
-	print(output);
-	
+	CSVQuestionViewModel.DisplayAnswer(true);
 }
 
 function ClearQuestions()
 {
+	CSVQuestionViewModel.ShowCenterButtons(false);
 	CSVQuestionViewModel.questions=ko.observableArray();
+}
+
+function clearOutput()
+{
+   /*     $("#out").html("");
+       data_string=""; */
 }
 
 
@@ -80,14 +84,20 @@ function run_file(doc,start, end)
 		
 		if(question.answer!=null && question.question!=null)
 		{
-			PushQuestion(question);
+			CSVQuestionViewModel.questions.push(question);
 		}
 		
 	}
 	
-	print("file loaded");
+	CSVQuestionViewModel.ShowCenterButtons(true);
+	CSVQuestionViewModel.DisplayCard(true);
+	CSVQuestionViewModel.currentQuestion("File Loaded");
+	CSVQuestionViewModel.DisplayQuestion(true);
+	
 }
 
+
 $(document).ready(function(){
+	var doc;
 	 ko.applyBindings(new CSVQuestionViewModel() );
 });

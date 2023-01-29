@@ -70,3 +70,8 @@ input
 	color: white;
 	width: 200px;
 }
+
+#centerButtons
+{
+	text-align: center;
+}
