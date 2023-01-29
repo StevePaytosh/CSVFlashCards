@@ -2,8 +2,9 @@ var CSVQuestionViewModel = function()
 {
 	CSVQuestionViewModel.currentAnswer = ko.observable('');
 	CSVQuestionViewModel.currentQuestion = ko.observable('');
+	CSVQuestionViewModel.State = ko.observable('')
 	CSVQuestionViewModel.ShowCenterButtons = ko.observable(false);
-	CSVQuestionViewModel.ShowAnswerButton = ko.observable(false);
+	CSVQuestionViewModel.ShowNextButton = ko.observable(false);
 	CSVQuestionViewModel.DisplayQuestion = ko.observable(false);
 	CSVQuestionViewModel.DisplayAnswer = ko.observable(false);
 	CSVQuestionViewModel.DisplayCard = ko.observable(false);
@@ -15,8 +16,8 @@ function GetRandomQuestion()
 {
 	var length=CSVQuestionViewModel.questions().length;
 	var q = CSVQuestionViewModel.questions()[Math.floor( Math.random()*length ) ];
-	CSVQuestionViewModel.currentQuestion(q.question);
-	CSVQuestionViewModel.currentAnswer(q.answer);
+	CSVQuestionViewModel.currentQuestion('Q: '+q.question);
+	CSVQuestionViewModel.currentAnswer('A: '+q.answer);
 }
 
 function NextQuestion()
@@ -27,22 +28,44 @@ function NextQuestion()
 
 	CSVQuestionViewModel.DisplayAnswer(false);
 
-	if(!CSVQuestionViewModel.ShowAnswerButton())
+	if(!CSVQuestionViewModel.ShowNextButton())
 	{
-		CSVQuestionViewModel.ShowAnswerButton(true);
+		CSVQuestionViewModel.ShowNextButton(true);
 	}
 	
+	CSVQuestionViewModel.State('QuestionLoaded');
 }
 
-function GetAnswer()
+function AnswerQuestion()
 {
-	CSVQuestionViewModel.DisplayAnswer(true);
+		CSVQuestionViewModel.DisplayAnswer(true);
+		CSVQuestionViewModel.State('Answered');
+}
+
+function GetNext()
+{
+	switch(CSVQuestionViewModel.State())
+	{
+		case '': 
+		CSVQuestionViewModel.ShowCenterButtons(false);
+		CSVQuestionViewModel.DisplayCard(false);
+		break;
+		case 'QuestionLoaded':
+		AnswerQuestion();
+		break;
+		case 'Answered':
+		case 'FileLoaded':
+		NextQuestion();
+		break;
+		deafault: break;
+	}
 }
 
 function ClearQuestions()
 {
 	CSVQuestionViewModel.ShowCenterButtons(false);
 	CSVQuestionViewModel.questions=ko.observableArray();
+	CSVQuestionViewModel.State('');
 }
 
 function clearOutput()
@@ -93,6 +116,8 @@ function run_file(doc,start, end)
 	CSVQuestionViewModel.DisplayCard(true);
 	CSVQuestionViewModel.currentQuestion("File Loaded");
 	CSVQuestionViewModel.DisplayQuestion(true);
+	CSVQuestionViewModel.ShowNextButton (true);
+	CSVQuestionViewModel.State('FileLoaded');
 	
 }
 

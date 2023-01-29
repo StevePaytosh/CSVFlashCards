@@ -25,8 +25,7 @@
 </div>
 
 <div id="centerButtons" data-bind="visible:CSVQuestionViewModel.ShowCenterButtons()">
-<button class="centerButton" id="NextQuestion" data-bind="click:NextQuestion">Next Question</button><br>
-<button class="centerButton" id="Answer" data-bind="click:GetAnswer, visible:CSVQuestionViewModel.ShowAnswerButton()">Answer</button><br>
+<button class="centerButton" id="Next" data-bind="click:GetNext, visible:CSVQuestionViewModel.ShowNextButton()">Next</button><br>
 
 </div>
 </body>
