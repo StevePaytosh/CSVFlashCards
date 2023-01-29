@@ -18,6 +18,10 @@
 <input  type="file" id="fileInput" name="files[]"  />
 <button id="run" data-bind="click:process ">Load CSV</button><br>
 <button id="clear" data-bind="click:clearOutput">Clear</button><br>
+<div data-bind=" visible: CSVQuestionViewModel.DisplayQuestionCounter()" style="margin-left: 20px; color:red; font-size: 15px;">
+Questions Remaining: 
+<span data-bind="text: CSVQuestionViewModel.QuestionCounter()"/>
+</div>
 
 <div id="out" data-bind="visible: CSVQuestionViewModel.DisplayCard()">
 <div data-bind="text:CSVQuestionViewModel.currentQuestion(), visible: CSVQuestionViewModel.DisplayQuestion()"> </div>

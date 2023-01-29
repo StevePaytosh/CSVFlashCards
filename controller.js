@@ -3,6 +3,8 @@ var CSVQuestionViewModel = function()
 	CSVQuestionViewModel.currentAnswer = ko.observable('');
 	CSVQuestionViewModel.currentQuestion = ko.observable('');
 	CSVQuestionViewModel.State = ko.observable('')
+	CSVQuestionViewModel.QuestionCounter = ko.observable(0);
+	CSVQuestionViewModel.DisplayQuestionCounter = ko.observable(false);
 	CSVQuestionViewModel.ShowCenterButtons = ko.observable(false);
 	CSVQuestionViewModel.ShowNextButton = ko.observable(false);
 	CSVQuestionViewModel.DisplayQuestion = ko.observable(false);
@@ -18,13 +20,31 @@ function GetRandomQuestion()
 	var q = CSVQuestionViewModel.questions()[Math.floor( Math.random()*length ) ];
 	CSVQuestionViewModel.currentQuestion('Q: '+q.question);
 	CSVQuestionViewModel.currentAnswer('A: '+q.answer);
+	
+	RemoveQuestion(q);
+}
+
+function RemoveQuestion(q)
+{
+	CSVQuestionViewModel.questions.remove(q);
+	CSVQuestionViewModel.QuestionCounter(CSVQuestionViewModel.questions().length);
 }
 
 function NextQuestion()
 {
 	CSVQuestionViewModel.currentQuestion('');
 	CSVQuestionViewModel.currentAnswer('');
-	GetRandomQuestion();
+	
+	if(CSVQuestionViewModel.questions().length > 0)
+	{
+		GetRandomQuestion();
+	}
+	else
+	{
+		CSVQuestionViewModel.State('OutOfQuestions');
+		CSVQuestionViewModel.currentQuestion('Out of Questions');
+		//CSVQuestionViewModel.DisplayAnswer(false);
+	}
 
 	CSVQuestionViewModel.DisplayAnswer(false);
 
@@ -49,6 +69,7 @@ function GetNext()
 		case '': 
 		CSVQuestionViewModel.ShowCenterButtons(false);
 		CSVQuestionViewModel.DisplayCard(false);
+		CSVQuestionViewModel.DisplayQuestionCounter(false);
 		break;
 		case 'QuestionLoaded':
 		AnswerQuestion();
@@ -56,6 +77,8 @@ function GetNext()
 		case 'Answered':
 		case 'FileLoaded':
 		NextQuestion();
+		break;
+		case 'OutOfQuestions':
 		break;
 		deafault: break;
 	}
@@ -77,14 +100,22 @@ function clearOutput()
 
 function process()
 {
-	//method that is called by pushing the run button
+	ClearQuestions();
 	run_file(doc,0,doc.length);
 	
+	CSVQuestionViewModel.ShowCenterButtons(true);
+	CSVQuestionViewModel.DisplayCard(true);
+	CSVQuestionViewModel.currentQuestion("File Loaded");
+	CSVQuestionViewModel.DisplayQuestion(true);
+	CSVQuestionViewModel.ShowNextButton (true);
+	CSVQuestionViewModel.State('FileLoaded');
+	CSVQuestionViewModel.DisplayQuestionCounter(true);
+	CSVQuestionViewModel.QuestionCounter(CSVQuestionViewModel.questions().length);
 }
 
 function run_file(doc,start, end)
 {
-	ClearQuestions();
+	
 	
 	for(var i=start;i<end;i++)
 	{
@@ -111,13 +142,6 @@ function run_file(doc,start, end)
 		}
 		
 	}
-	
-	CSVQuestionViewModel.ShowCenterButtons(true);
-	CSVQuestionViewModel.DisplayCard(true);
-	CSVQuestionViewModel.currentQuestion("File Loaded");
-	CSVQuestionViewModel.DisplayQuestion(true);
-	CSVQuestionViewModel.ShowNextButton (true);
-	CSVQuestionViewModel.State('FileLoaded');
 	
 }
 
