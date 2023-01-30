@@ -80,6 +80,6 @@ input
 .centerButton
 {
 	height: 40px;
-	width: 100px !important;
+	width: auto !important;
 	font-size: 18pt;
 }

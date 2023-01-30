@@ -7,10 +7,12 @@ var CSVQuestionViewModel = function()
 	CSVQuestionViewModel.DisplayQuestionCounter = ko.observable(false);
 	CSVQuestionViewModel.ShowCenterButtons = ko.observable(false);
 	CSVQuestionViewModel.ShowNextButton = ko.observable(false);
+	CSVQuestionViewModel.ShowReloadButton = ko.observable(false);
 	CSVQuestionViewModel.DisplayQuestion = ko.observable(false);
 	CSVQuestionViewModel.DisplayAnswer = ko.observable(false);
 	CSVQuestionViewModel.DisplayCard = ko.observable(false);
 	CSVQuestionViewModel.questions = ko.observableArray();
+	CSVQuestionViewModel.removedQuestions = ko.observableArray();
 	
 };
 
@@ -22,11 +24,13 @@ function GetRandomQuestion()
 	CSVQuestionViewModel.currentAnswer('A: '+q.answer);
 	
 	RemoveQuestion(q);
+	
 }
 
 function RemoveQuestion(q)
 {
 	CSVQuestionViewModel.questions.remove(q);
+	CSVQuestionViewModel.removedQuestions.push(q);
 	CSVQuestionViewModel.QuestionCounter(CSVQuestionViewModel.questions().length);
 }
 
@@ -43,7 +47,9 @@ function NextQuestion()
 	{
 		CSVQuestionViewModel.State('OutOfQuestions');
 		CSVQuestionViewModel.currentQuestion('Out of Questions');
-		//CSVQuestionViewModel.DisplayAnswer(false);
+		CSVQuestionViewModel.ShowReloadButton(true);
+		CSVQuestionViewModel.ShowNextButton(false);
+		return;
 	}
 
 	CSVQuestionViewModel.DisplayAnswer(false);
@@ -91,10 +97,24 @@ function ClearQuestions()
 	CSVQuestionViewModel.State('');
 }
 
+function ReloadQuestions()
+{
+	CSVQuestionViewModel.ShowReloadButton(true);
+	$.each(CSVQuestionViewModel.removedQuestions(), function() { CSVQuestionViewModel.questions.push(this); });
+	CSVQuestionViewModel.removedQuestions = ko.observableArray();
+	CSVQuestionViewModel.State('FileLoaded');
+	CSVQuestionViewModel.currentQuestion('Questions Reloaded');
+	CSVQuestionViewModel.ShowNextButton(true);
+	CSVQuestionViewModel.ShowReloadButton(false);
+}
+
 function clearOutput()
 {
-   /*     $("#out").html("");
-       data_string=""; */
+	CSVQuestionViewModel.State('');
+    CSVQuestionViewModel.ShowCenterButtons(false);
+	CSVQuestionViewModel.DisplayCard(false);
+	CSVQuestionViewModel.DisplayQuestionCounter(false);
+    CSVQuestionViewModel.questions = ko.observableArray();
 }
 
 
