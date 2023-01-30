@@ -1,64 +1,141 @@
-var questions=[];
-var current_question="";
-var current_answer="";
-
-$(document).ready(function(){
-	
-});
-
-function PushQuestion( question )
+var CSVQuestionViewModel = function()
 {
-	//pushes a new questions object
-	questions.push(question);
-
-}
+	CSVQuestionViewModel.currentAnswer = ko.observable('');
+	CSVQuestionViewModel.currentQuestion = ko.observable('');
+	CSVQuestionViewModel.State = ko.observable('')
+	CSVQuestionViewModel.QuestionCounter = ko.observable(0);
+	CSVQuestionViewModel.DisplayQuestionCounter = ko.observable(false);
+	CSVQuestionViewModel.ShowCenterButtons = ko.observable(false);
+	CSVQuestionViewModel.ShowNextButton = ko.observable(false);
+	CSVQuestionViewModel.ShowReloadButton = ko.observable(false);
+	CSVQuestionViewModel.DisplayQuestion = ko.observable(false);
+	CSVQuestionViewModel.DisplayAnswer = ko.observable(false);
+	CSVQuestionViewModel.DisplayCard = ko.observable(false);
+	CSVQuestionViewModel.questions = ko.observableArray();
+	CSVQuestionViewModel.removedQuestions = ko.observableArray();
+	
+};
 
 function GetRandomQuestion()
 {
-	//gets a random question
+	var length=CSVQuestionViewModel.questions().length;
+	var q = CSVQuestionViewModel.questions()[Math.floor( Math.random()*length ) ];
+	CSVQuestionViewModel.currentQuestion('Q: '+q.question);
+	CSVQuestionViewModel.currentAnswer('A: '+q.answer);
+	
+	RemoveQuestion(q);
+	
+}
 
-	var length=questions.length;
-	var q = questions[Math.floor( Math.random()*length ) ];
-	current_question=q.question;
-	current_answer=q.answer;
+function RemoveQuestion(q)
+{
+	CSVQuestionViewModel.questions.remove(q);
+	CSVQuestionViewModel.removedQuestions.push(q);
+	CSVQuestionViewModel.QuestionCounter(CSVQuestionViewModel.questions().length);
 }
 
 function NextQuestion()
 {
-	clearOutput();
-	var output=""
-	GetRandomQuestion();
-
-	output="Q: "+ current_question+"<p>";
-	print(output);
+	CSVQuestionViewModel.currentQuestion('');
+	CSVQuestionViewModel.currentAnswer('');
 	
+	if(CSVQuestionViewModel.questions().length > 0)
+	{
+		GetRandomQuestion();
+	}
+	else
+	{
+		CSVQuestionViewModel.State('OutOfQuestions');
+		CSVQuestionViewModel.currentQuestion('Out of Questions');
+		CSVQuestionViewModel.ShowReloadButton(true);
+		CSVQuestionViewModel.ShowNextButton(false);
+		return;
+	}
+
+	CSVQuestionViewModel.DisplayAnswer(false);
+
+	if(!CSVQuestionViewModel.ShowNextButton())
+	{
+		CSVQuestionViewModel.ShowNextButton(true);
+	}
+	
+	CSVQuestionViewModel.State('QuestionLoaded');
 }
 
-function GetAnswer()
+function AnswerQuestion()
 {
-	clearOutput();
-	var output="Q: "+ current_question+"<p>A: "+current_answer+"<p>";
-	print(output);
-	
+		CSVQuestionViewModel.DisplayAnswer(true);
+		CSVQuestionViewModel.State('Answered');
+}
+
+function GetNext()
+{
+	switch(CSVQuestionViewModel.State())
+	{
+		case '': 
+		CSVQuestionViewModel.ShowCenterButtons(false);
+		CSVQuestionViewModel.DisplayCard(false);
+		CSVQuestionViewModel.DisplayQuestionCounter(false);
+		break;
+		case 'QuestionLoaded':
+		AnswerQuestion();
+		break;
+		case 'Answered':
+		case 'FileLoaded':
+		NextQuestion();
+		break;
+		case 'OutOfQuestions':
+		break;
+		deafault: break;
+	}
 }
 
 function ClearQuestions()
 {
-	
-	questions=[];
+	CSVQuestionViewModel.ShowCenterButtons(false);
+	CSVQuestionViewModel.questions=ko.observableArray();
+	CSVQuestionViewModel.State('');
+}
+
+function ReloadQuestions()
+{
+	CSVQuestionViewModel.ShowReloadButton(true);
+	$.each(CSVQuestionViewModel.removedQuestions(), function() { CSVQuestionViewModel.questions.push(this); });
+	CSVQuestionViewModel.removedQuestions = ko.observableArray();
+	CSVQuestionViewModel.State('FileLoaded');
+	CSVQuestionViewModel.currentQuestion('Questions Reloaded');
+	CSVQuestionViewModel.ShowNextButton(true);
+	CSVQuestionViewModel.ShowReloadButton(false);
+}
+
+function clearOutput()
+{
+	CSVQuestionViewModel.State('');
+    CSVQuestionViewModel.ShowCenterButtons(false);
+	CSVQuestionViewModel.DisplayCard(false);
+	CSVQuestionViewModel.DisplayQuestionCounter(false);
+    CSVQuestionViewModel.questions = ko.observableArray();
 }
 
 
 function process()
 {
-	//method that is called by pushing the run button
+	ClearQuestions();
 	run_file(doc,0,doc.length);
 	
+	CSVQuestionViewModel.ShowCenterButtons(true);
+	CSVQuestionViewModel.DisplayCard(true);
+	CSVQuestionViewModel.currentQuestion("File Loaded");
+	CSVQuestionViewModel.DisplayQuestion(true);
+	CSVQuestionViewModel.ShowNextButton (true);
+	CSVQuestionViewModel.State('FileLoaded');
+	CSVQuestionViewModel.DisplayQuestionCounter(true);
+	CSVQuestionViewModel.QuestionCounter(CSVQuestionViewModel.questions().length);
 }
 
 function run_file(doc,start, end)
 {
-	ClearQuestions();
+	
 	
 	for(var i=start;i<end;i++)
 	{
@@ -81,10 +158,15 @@ function run_file(doc,start, end)
 		
 		if(question.answer!=null && question.question!=null)
 		{
-			PushQuestion(question);
+			CSVQuestionViewModel.questions.push(question);
 		}
 		
 	}
 	
-	print("file loaded");
 }
+
+
+$(document).ready(function(){
+	var doc;
+	 ko.applyBindings(new CSVQuestionViewModel() );
+});

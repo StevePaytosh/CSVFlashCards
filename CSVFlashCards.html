@@ -1,8 +1,8 @@
 <head>
 <script src="http://www.w3schools.com/lib/w3data.js"></script>
 	<script src="http://www.w3schools.com/lib/w3data.js"></script>
+	  <script type='text/javascript' src='knockout-3.5.1.js'></script>
 	  <script src="jquery-3.2.1.js"></script>	
-	  
       <script type="text/javascript" src="controller.js" ></script>
 	  <script type="text/javascript" src="io.js" ></script>
 
@@ -16,13 +16,21 @@
 <div id="title">CSV Flash Cards</div>
 <p>
 <input  type="file" id="fileInput" name="files[]"  />
-<button id="run" onclick="process()">Load CSV</button><br>
-<button id="clear" onclick="clearOutput()">Clear</button><br>
-<button id="NextQuestion" onclick="NextQuestion()">Next Question</button><br>
-<button id="Answer" onclick="GetAnswer()">Answer</button><br>
+<button id="run" data-bind="click:process ">Load CSV</button><br>
+<button id="clear" data-bind="click:clearOutput">Clear</button><br>
+<div data-bind=" visible: CSVQuestionViewModel.DisplayQuestionCounter()" style="margin-left: 20px; color:red; font-size: 15px;">
+Questions Remaining: 
+<span data-bind="text: CSVQuestionViewModel.QuestionCounter()"/>
+</div>
 
+<div id="out" data-bind="visible: CSVQuestionViewModel.DisplayCard()">
+<div data-bind="text:CSVQuestionViewModel.currentQuestion(), visible: CSVQuestionViewModel.DisplayQuestion()"> </div>
+<div data-bind="text:CSVQuestionViewModel.currentAnswer(), visible: CSVQuestionViewModel.DisplayAnswer()"> </div>
+</div>
 
-<div id="out"></div>
+<div id="centerButtons" data-bind="visible:CSVQuestionViewModel.ShowCenterButtons()">
+<button class="centerButton" id="Next" data-bind="click:GetNext, visible:CSVQuestionViewModel.ShowNextButton()">Next</button><br>
+<button class="centerButton" id="Reload" data-bind="click:ReloadQuestions, visible:CSVQuestionViewModel.ShowReloadButton()">Reload Questions</button><br>
 
 </div>
 </body>
