@@ -127,6 +127,7 @@ function process()
 	CSVQuestionViewModel.DisplayCard(true);
 	CSVQuestionViewModel.currentQuestion("File Loaded");
 	CSVQuestionViewModel.DisplayQuestion(true);
+	CSVQuestionViewModel.DisplayAnswer(false);
 	CSVQuestionViewModel.ShowNextButton (true);
 	CSVQuestionViewModel.State('FileLoaded');
 	CSVQuestionViewModel.DisplayQuestionCounter(true);
