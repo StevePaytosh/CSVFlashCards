@@ -1,0 +1,507 @@
+var QuestionViewModel = function()
+{
+	QuestionViewModel.english = ko.observable('');
+  QuestionViewModel.romanized = ko.observable('');
+	QuestionViewModel.korean = ko.observable('');
+  QuestionViewModel.category = ko.observable('');
+	QuestionViewModel.State = ko.observable('');
+	QuestionViewModel.QuestionCounter = ko.observable(0);
+	QuestionViewModel.DisplayQuestionCounter = ko.observable(false);
+	QuestionViewModel.ShowCenterButtons = ko.observable(false);
+	QuestionViewModel.ShowNextButton = ko.observable(false);
+	QuestionViewModel.ShowReloadButton = ko.observable(false);
+	QuestionViewModel.DisplayKorean = ko.observable(true);
+	QuestionViewModel.DisplayEnglish = ko.observable(false);
+  QuestionViewModel.DisplayRomanized = false;
+  QuestionViewModel.DisplayRomanizedQ = ko.observable(false);
+  QuestionViewModel.DisplayRomanizedA = ko.observable(false);
+  QuestionViewModel.DisplayCategory = ko.observable(true);
+	QuestionViewModel.DisplayCard = ko.observable(true);
+	QuestionViewModel.questions = ko.observableArray();
+	QuestionViewModel.removedQuestions = ko.observableArray();
+  
+  QuestionViewModel.EnableHangul = ko.observable(true);
+  QuestionViewModel.EnableHanja = ko.observable(true);
+  QuestionViewModel.EnableHangulNumbers = ko.observable(true);
+  QuestionViewModel.EnableWords = ko.observable(true);
+  QuestionViewModel.EnablePhrases = ko.observable(true);
+  
+  QuestionViewModel.chkHangul = ko.observable(true);
+  QuestionViewModel.chkHanja = ko.observable(false);
+  QuestionViewModel.chkHangulNumbers = ko.observable(true);
+  QuestionViewModel.chkWords = ko.observable(false);
+  QuestionViewModel.chkPhrases = ko.observable(false);
+  QuestionViewModel.chkCategory = ko.observable(true);
+  QuestionViewModel.chkRomanized = ko.observable(true);
+  QuestionViewModel.chkQuestionCounter = ko.observable(false);
+  QuestionViewModel.chkRepeatQuestions = ko.observable(true);
+  QuestionViewModel.chkKoreanToEnglish = ko.observable(true);
+  QuestionViewModel.chkRandomNumber = ko.observable(false);
+  
+  QuestionViewModel.savedOptions = [];
+	
+};
+
+//checkbox handling
+function checkBoxChange()
+{
+  var currentQuestion = 
+      {
+        korean: QuestionViewModel.korean(),
+        english: QuestionViewModel.english(),
+        romanized: QuestionViewModel.romanized(),
+        category: QuestionViewModel.category(),
+        showAnswer: QuestionViewModel.DisplayEnglish(),
+        questionState: QuestionViewModel.State()
+      };
+  
+    ClearQuestions();
+    LoadQuestions();
+    process();
+  
+    QuestionViewModel.korean(currentQuestion.korean);
+    QuestionViewModel.english(currentQuestion.english);
+    QuestionViewModel.romanized(currentQuestion.romanized);
+    QuestionViewModel.category(currentQuestion.category);
+    QuestionViewModel.DisplayEnglish(currentQuestion.showAnswer);
+    QuestionViewModel.State(currentQuestion.questionState);
+  
+    checkBoxChangeDisplay();
+}
+
+function checkBoxChangeDisplay()
+{
+ QuestionViewModel.DisplayCategory(QuestionViewModel.chkCategory());
+ SetRomanizedVisibility();
+ QuestionViewModel.DisplayQuestionCounter(!QuestionViewModel.chkRepeatQuestions());
+  
+}
+
+function toggleRandomNumber()
+{
+    if(QuestionViewModel.chkRandomNumber())
+    {
+      if(QuestionViewModel.chkHangul())
+      { QuestionViewModel.savedOptions.push("hangul"); }
+       
+            if(QuestionViewModel.chkHanja())
+      { QuestionViewModel.savedOptions.push("hanja"); }
+      
+            if(QuestionViewModel.chkHangulNumbers())
+      { QuestionViewModel.savedOptions.push("hangulnumbers"); }
+      
+            if(QuestionViewModel.chkWords())
+      { QuestionViewModel.savedOptions.push("words"); }
+      
+            if(QuestionViewModel.chkPhrases())
+      { QuestionViewModel.savedOptions.push("phrases"); }
+      
+      QuestionViewModel.chkHangul(false);
+      QuestionViewModel.chkHanja(false);
+      QuestionViewModel.chkHangulNumbers(false);
+      QuestionViewModel.chkWords(false);
+      QuestionViewModel.chkPhrases(false);
+      
+      QuestionViewModel.EnableHangul(false);
+      QuestionViewModel.EnableHanja(false);
+      QuestionViewModel.EnableHangulNumbers(false);
+      QuestionViewModel.EnableWords(false);
+      QuestionViewModel.EnablePhrases(false);
+    }
+  else
+    {
+      QuestionViewModel.EnableHangul(true);
+      QuestionViewModel.EnableHanja(true);
+      QuestionViewModel.EnableHangulNumbers(true);
+      QuestionViewModel.EnableWords(true);
+      QuestionViewModel.EnablePhrases(true);
+      
+
+      if(hasValue("hangul"))
+        {
+           QuestionViewModel.chkHangul(true);
+        }
+      
+      if(hasValue("hanja"))
+        {
+           QuestionViewModel.chkHanja(true);
+        }
+      
+      if(hasValue("hangulnumbers"))
+        {
+           QuestionViewModel.chkHangulNumbers(true);
+        }
+
+      if(hasValue("words"))
+        {
+           QuestionViewModel.chkWords(true);
+        }
+      
+           
+      if(hasValue("phrases"))
+        {
+           QuestionViewModel.chkPhrases(true);
+        }
+      
+        QuestionViewModel.savedValues=[];
+    }
+}
+
+function setDefaultSettings()
+{
+    QuestionViewModel.EnableHangul(true);
+    QuestionViewModel.EnableHanja(true);
+    QuestionViewModel.EnableHangulNumbers(true);
+    QuestionViewModel.EnableWords(true);
+    QuestionViewModel.EnablePhrases(true);
+      
+    QuestionViewModel.chkHangul(false);
+    QuestionViewModel.chkHanja(false);
+    QuestionViewModel.chkHangulNumbers(false);
+    QuestionViewModel.chkWords(false);
+    QuestionViewModel.chkPhrases(false);
+  
+    QuestionViewModel.chkHangul(true);
+    QuestionViewModel.chkiraganaNumbers(true);
+}
+
+function hasValue(chkValue)
+{
+  return QuestionViewModel.savedOptions.includes(chkValue,0);  
+}
+
+//Visibility Functions
+function ClearQuestions()
+{
+	QuestionViewModel.ShowCenterButtons(false);
+	QuestionViewModel.questions=ko.observableArray();
+	QuestionViewModel.State('');
+}
+
+function clearOutput()
+{
+	QuestionViewModel.State('');
+    QuestionViewModel.ShowCenterButtons(false);
+	QuestionViewModel.DisplayCard(false);
+	QuestionViewModel.DisplayQuestionCounter(false);
+    QuestionViewModel.questions = ko.observableArray();
+}
+
+function AnswerQuestion()
+{
+		QuestionViewModel.DisplayEnglish(true);
+		QuestionViewModel.State('Answered');
+}
+
+function RemoveQuestion(q)
+{
+	QuestionViewModel.questions.remove(q);
+	QuestionViewModel.removedQuestions.push(q);
+	QuestionViewModel.QuestionCounter(QuestionViewModel.questions().length);
+}
+
+//Question and Answer Engine
+function GetRandomQuestion()
+{
+  if(QuestionViewModel.chkRandomNumber())
+{
+  getRandomNumberQuestion();
+} 
+  else
+    {
+	var length=QuestionViewModel.questions().length;
+	var q = QuestionViewModel.questions()[Math.floor( Math.random()*length ) ];
+	QuestionViewModel.korean(q.korean);
+  
+    if(typeof q.romanized==='undefined' || q.romanized == '')
+    {
+        QuestionViewModel.romanized('');
+    }
+    else
+    {
+       QuestionViewModel.romanized(' ('+q.romanized+')');
+    }
+   
+	QuestionViewModel.english(q.english);
+  QuestionViewModel.category(q.category);
+  
+  if(!QuestionViewModel.chkRepeatQuestions())
+  {
+    RemoveQuestion(q);
+  }	
+    }
+}
+
+function getRandomNumberQuestion()
+{
+  var magnitude = Math.floor(Math.random()*4);
+  var number = 0;
+  if(magnitude==0)
+    {
+      number = Math.floor(Math.random()*100);
+      QuestionViewModel.category("(small) number");
+    }
+  else if(magnitude==1)
+    {
+      number = Math.floor(Math.random()*1000);
+      QuestionViewModel.category("(medium) number");
+    }
+  else if(magnitude==2)
+    {
+      number = Math.floor(Math.random()*10000);
+      QuestionViewModel.category("(large) number");
+    }
+  else if(magnitude==3)
+    {
+      number = Math.floor(Math.random()*100000);
+      QuestionViewModel.category("(larger) number");
+    }
+  else 
+    {
+        QuestionViewModel.category("failed to get number -- "+magnitude);
+    }
+  
+  calculateNumberInKorean(number);
+  QuestionViewModel.korean(number);
+  
+}
+
+function calculateNumberInKorean(number)
+{
+  
+}
+
+function NextQuestion()
+{
+  
+  var previousQuestion = 
+      {
+        	korean: QuestionViewModel.korean(),
+          romanized: QuestionViewModel.romanized(),
+          english: QuestionViewModel.english(),
+          category: QuestionViewModel.category()
+      };
+  
+	QuestionViewModel.korean('');
+  QuestionViewModel.romanized('');
+	QuestionViewModel.english('');
+  QuestionViewModel.category('');
+	
+	if(QuestionViewModel.questions().length > 0)
+	{
+    GetRandomQuestion();
+    while(QuestionViewModel.korean === previousQuestion.korean)
+    {
+     GetRandomQuestion();
+    }
+	}
+	else
+	{
+		QuestionViewModel.State('OutOfQuestions');
+		QuestionViewModel.ShowReloadButton(true);
+		QuestionViewModel.ShowNextButton(false);
+		return;
+	}
+
+	QuestionViewModel.DisplayEnglish(false);
+
+	if(!QuestionViewModel.ShowNextButton())
+	{
+		QuestionViewModel.ShowNextButton(true);
+	}
+	
+	QuestionViewModel.State('QuestionLoaded');
+}
+
+function GetNext()
+{
+	switch(QuestionViewModel.State())
+	{
+		case '': 
+		QuestionViewModel.ShowCenterButtons(false);
+		QuestionViewModel.DisplayCard(false);
+		QuestionViewModel.DisplayQuestionCounter(false);
+		break;
+		case 'QuestionLoaded':
+		AnswerQuestion();
+		break;
+		case 'Answered':
+		case 'FileLoaded':
+		NextQuestion();
+		break;
+		case 'OutOfQuestions':
+		break;
+		deafault: break;
+	}
+  
+   QuestionViewModel.DisplayCategory(QuestionViewModel.chkCategory());
+   SetRomanizedVisibility();
+}
+
+function SetRomanizedVisibility()
+{
+  if(QuestionViewModel.chkRomanized())
+  {
+     QuestionViewModel.DisplayRomanizedQ
+     (QuestionViewModel.chkKoreanToEnglish());
+     QuestionViewModel.DisplayRomanizedA
+     (!QuestionViewModel.chkKoreanToEnglish());
+  }
+}
+
+function ResetQuestions()
+{
+  
+}
+
+function ReloadQuestions()
+{
+	QuestionViewModel.ShowReloadButton(true);
+	//$.each(QuestionViewModel.removedQuestions(), function() { QuestionViewModel.questions.push(this); });
+  LoadQuestions();
+	QuestionViewModel.removedQuestions = ko.observableArray(); QuestionViewModel.QuestionCounter(QuestionViewModel.questions().length);
+	QuestionViewModel.State('FileLoaded');
+	QuestionViewModel.korean('Questions Reloaded');
+	QuestionViewModel.ShowNextButton(true);
+	QuestionViewModel.ShowReloadButton(false);
+}
+
+function process()
+{
+	
+	QuestionViewModel.ShowCenterButtons(true);
+	QuestionViewModel.DisplayCard(true);
+	QuestionViewModel.category("Ready: Hit Next to Start!");
+	QuestionViewModel.DisplayKorean(true);
+  SetRomanizedVisibility();
+	QuestionViewModel.DisplayEnglish(false);
+  QuestionViewModel.DisplayCategory(true);
+	QuestionViewModel.ShowNextButton (true);  
+  QuestionViewModel.QuestionCounter(QuestionViewModel.questions().length);
+	QuestionViewModel.State('FileLoaded');
+  
+}
+
+$(document).ready(function(){
+	 ko.applyBindings(new QuestionViewModel() );
+                   
+   LoadQuestions();
+   process();
+                  
+});
+
+function LoadQuestions()
+{
+    if(QuestionViewModel.chkHangulNumbers()) {addNumbers();}
+    if(QuestionViewModel.chkHangul()){ addHangul();}
+    if(QuestionViewModel.chkHanja()){addHanja();}
+    if(QuestionViewModel.chkWords()){addWords();}
+    if(QuestionViewModel.chkPhrases()){addPhrases();}
+};
+
+function addQuestion(j,r,e,category='')
+{
+  var question=
+  {
+    korean: j,
+      romanized: r,
+    english: e,
+    category: category
+  };
+  
+  QuestionViewModel.questions.push(question);
+}
+
+function addNumbers()
+{
+  addQuestion("영","young","zero","Number (Hangul)");
+   addQuestion("일","il","one","Number (Hangul)");
+  addQuestion("이","ee","two","Number (Hangul)");
+  addQuestion("삼","sam","three","Number (Hangul)");
+  addQuestion("사","sa","four","Number (Hangul)");
+  addQuestion("오","oh","five","Number (Hangul)");
+  addQuestion("육","yook","six","Number (Hangul)");
+  addQuestion("칠","chil","seven","Number (Hangul)");
+  addQuestion("팔","pal","eight","Number (Hangul)");
+  addQuestion("구","gu","nine","Number (Hangul)");
+  addQuestion("십","ship","ten","Number (Hangul)");
+}
+
+function addHangul()
+{
+ addQuestion('ㄱ','g','k','Hangul');
+addQuestion('ㄲ','kk','k','Hangul');
+addQuestion('ㄴ','n','n','Hangul');
+addQuestion('ㄷ','d','t','Hangul');
+addQuestion('ㄸ','','tt','Hangul');
+addQuestion('ㄹ','r','l','Hangul');
+addQuestion('ㅁ','m','m','Hangul');
+addQuestion('ㅂ','b','p','Hangul');
+addQuestion('ㅃ','','pp','Hangul');
+addQuestion('ㅅ','s','t','Hangul');
+addQuestion('ㅆ','ss','t','Hangul');
+addQuestion('ㅇ','-','ng','Hangul');
+addQuestion('ㅈ','j','t','Hangul');
+addQuestion('ㅉ','','jj','Hangul');
+addQuestion('ㅊ','ch','t','Hangul');
+addQuestion('ㅋ','k','k','Hangul');
+addQuestion('ㅌ','t','t','Hangul');
+addQuestion('ㅍ','p','p','Hangul');
+addQuestion('ㅎ','h','t','Hangul');
+  
+  addQuestion('ㅏ','','a','Hangul');
+addQuestion('ㅐ','','ae','Hangul');
+addQuestion('ㅑ','','ya','Hangul');
+addQuestion('ㅒ','','yae','Hangul');
+addQuestion('ㅓ','','eo','Hangul');
+addQuestion('ㅔ','','e','Hangul');
+addQuestion('ㅕ','','yeo','Hangul');
+addQuestion('ㅖ','','ye','Hangul');
+addQuestion('ㅗ','','o','Hangul');
+addQuestion('ㅘ','','wa','Hangul');
+addQuestion('ㅙ','','wae','Hangul');
+addQuestion('ㅚ','','oe','Hangul');
+addQuestion('ㅛ','','yo','Hangul');
+addQuestion('ㅜ','','u','Hangul');
+addQuestion('ㅝ','','wo','Hangul');
+addQuestion('ㅞ','','we','Hangul');
+addQuestion('ㅟ','','wi','Hangul');
+addQuestion('ㅠ','','yu','Hangul');
+addQuestion('ㅡ','','eu','Hangul');
+addQuestion('ㅢ','','ui','Hangul');
+addQuestion('ㅣ','','i','Hangul');
+
+}
+
+
+function addHanja()
+{
+  addQuestion('小','so','small','Hanja');
+  addQuestion('中','jung','medium','Hanja');
+  addQuestion('大','dae','large','Hanja');
+  addQuestion('人','in','person','Hanja');
+  addQuestion('男','nam','man','Hanja');
+  addQuestion('女','yeo','female','Hanja');
+  addQuestion('山','san','mountain','Hanja');
+  addQuestion('門','mun','door','Hanja');
+  addQuestion('月','dal','month','Hanja');
+  addQuestion('日','il','day','Hanja');	
+}
+
+function addWords()
+{
+  addQuestion('안녕하세요','annyeonghaseyo','Hello','Word');
+  addQuestion('주세요','juseyo','Please','Word');
+  addQuestion('죄송합니다','joesonghamnida','Sorry','Word');
+  addQuestion('네','ne','Yes','Word');
+  addQuestion('아니요','aniyo','No','Word');
+  addQuestion('아마도','amado','Maybe','Word');
+  addQuestion('도와 주세요','dowa juseyo','Help','Word');
+ 
+}
+
+function addPhrases()
+{
+  addQuestion('고맙습니다','gomapseumnida','Thank you','Phrase');
+  addQuestion('저기요','jeogiyo','Excuse me','Phrase');
+}

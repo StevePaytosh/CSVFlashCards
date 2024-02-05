@@ -1,0 +1,145 @@
+.header
+{
+  color: white;
+  font-size: 50pt;
+  text-align: center;
+  padding:2vw;
+}
+
+.information
+{
+  font-size:20pt;
+  border-color: black;
+  text-align:center;
+  background-color: white;
+  padding: 1vw;
+}
+
+.addon
+{
+  font-size:20pt;
+  text-align:center;
+  background-color: white;
+  padding: 1vw;
+}
+
+#out {
+  display: grid;
+  grid-template-columns: 10vw 20vw;
+  min-width: 500px;
+  grid-template-rows: repeat(5,5vw);
+  min-height:250px;
+  background-color: white;
+  max-width: 50vw;
+  max-height:26vw;
+  margin-left:20vw;
+}
+#category {
+  grid-column: 2;
+  grid-row: 1;
+  font-size:20pt;
+  text-align:center;
+  background-color: white;
+}
+#question-header {
+  grid-column: 1;
+  grid-row: 2/4;
+  background-color: green;
+
+}
+#question {
+  grid-column: 2;
+  grid-row: 2;
+}
+#answer-header {
+  grid-column: 1;
+  grid-row: 4/6;
+  background-color: blue;
+  padding-bottom: 10px;
+}
+#answer {
+  grid-column: 2;
+  grid-row: 4;
+}
+#question-addon {
+  grid-column: 2;
+  grid-row: 3;
+}
+#answer-addon
+{
+  grid-column: 2;
+  grid-row: 5;
+}
+body{
+	background-color:lightsteelblue !important;
+}
+
+#out:empty{
+	display:none;
+}
+
+
+.s
+{
+	--background-color:lightsteelblue; 
+	--min-height:250vh;
+	--width: 100vw;
+}
+
+button{
+	
+	background-color:green;
+	color:white !important;
+	font-size:bold;
+	border-radius:10px;
+	width:200px;
+	margin-left:15px !important;
+}
+
+button:hover, input:hover
+{
+	border-color:blue !important;
+}
+
+#title{
+	margin: 10px 0px 0px 0px;
+	text-align:center;
+	font-size:25pt;
+	color: black;
+  text-shadow: 2px 2px white;
+	
+}
+
+#sub-title{
+	--margin-left:35vw;
+	text-align:center;
+	font-size:20pt;
+	color: white;
+}
+
+input
+{
+	background-color:white;
+	color:black;
+	margin-left:15px !important;
+}
+
+#downloadlink
+{
+	margin-left:15px !important;
+	font-size:10pt !important;
+	color: white;
+	width: 200px;
+}
+
+#centerButtons
+{
+	text-align: center;
+}
+
+.centerButton
+{
+	height: 40px;
+	width: auto !important;
+	font-size: 18pt;
+}
