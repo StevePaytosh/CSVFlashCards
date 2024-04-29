@@ -1,8 +1,37 @@
+<<<<<<< Updated upstream
 var data_string="";
 var doc;
 
 
 window.onload = function() {
+=======
+function run_file(doc,start, end)
+{
+	for(var i=start;i<end;i++)
+	{
+		doc[i]=doc[i].trim();
+		var args=doc[i].split(","); //split up the line on commas
+		var ans="";
+    
+    addQuestion(args[0],args[2],args[3],args[4]);
+      var question=
+      {
+        japanese: args[0],
+        romanji: args[2],
+        english: args[3],
+        category: args[4]
+      };
+    
+    //add some validation please
+		QuestionViewModel.externalQuestions.push(question);
+		
+		
+	}
+}
+
+ window.onload = function() {
+		
+>>>>>>> Stashed changes
 		var fileInput = document.getElementById('fileInput');
 		var fileDisplayArea = document.getElementById('out');
 
@@ -24,6 +53,7 @@ window.onload = function() {
 				fileDisplayArea.innerText = "File not supported!"
 			}
 		});
+<<<<<<< Updated upstream
 };
 
 function print(text)
@@ -49,3 +79,12 @@ function clearOutput()
 	data_string="";
 }
 
+=======
+}; 
+
+function processFile()
+{
+	run_file(doc,0,doc.length);
+  MapQuestions();
+}
+>>>>>>> Stashed changes
